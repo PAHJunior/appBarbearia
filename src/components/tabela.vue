@@ -1,29 +1,29 @@
 <template>
-  <div class="q-pa-md">
-    <q-table
-      title="Barbearia 1 de outubro"
-      :data="data"
-      :columns="columns"
-      row-key="id"
-      :pagination.sync="pagination"
-      :loading="loading"
-      :filter="filter"
-      @request="onRequest"
-      binary-state-sort
-    >
-      <template v-slot:top-right>
-        <q-input  dense debounce="300" v-model="filter" placeholder="Search">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </template>
+  <q-card  bordered class="transparent no-border no-border-radius no-shadow">
+    <q-card-section class="row ">
 
-    </q-table>
-  </div>
+      <q-table
+        class="col-12"
+        title="Barbearia 1 de outubro"
+        :data="data"
+        :columns="columns"
+        row-key="_id"
+        :pagination.sync="pagination"
+        :loading="loading"
+        :filter="filter"
+      >
+        <template v-slot:top-right>
+          <q-btn dense flat round class="bg-grey-10 text-amber-14" @click="buscar" icon="search"/>
+        </template>
+
+      </q-table>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script>
+import Barbearia from '../services/barbearia/barbearia.js'
+import { dirname, parse } from 'path';
 export default {
   data () {
     return {
@@ -38,7 +38,7 @@ export default {
       },
       columns: [
         {
-          name: 'data',
+          name: 'create',
           required: true,
           label: 'Data',
           align: 'left',
@@ -59,7 +59,27 @@ export default {
 
   },
   methods: {
+    buscar(){
+      Barbearia.buscaBarbearia()
+        .then((barbearia) => {
+          let dados = barbearia.data.data
+          function createLinha(create, tipo, categoria, cartao, dinheiro){
+            return {
+              create: create,
+              tipo: tipo,
+              categoria: categoria,
+              cartao: cartao,
+              dinheiro: dinheiro,
+              quantidade: parseInt(cartao) + parse(dinheiro)
+            }
+          }
+          for(let i = 0; i < dados.length; i++){
 
+            this.data.push(dados[i].cortes.cabelo)
+            // this.data.push(createLinha(dados[i].create, object.keys(dados[i].cortes.cabelo), "cortes", dados[i].cortes.cabelo.dinheiro, dados[i].cortes.cabelo.cartao))
+          }
+        })
+    },
   }
 }
 </script>

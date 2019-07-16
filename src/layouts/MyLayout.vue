@@ -2,13 +2,12 @@
   <q-layout view="hHh lpR fFf" class="shadow-2 rounded-borders">
     <q-header reveal class="bg-black">
       <q-toolbar class="bg-grey-10  text-amber-14">
-        <q-btn v-if="this.$q.platform.is.desktop" flat @click="drawerLeft = !drawerLeft" class="text-white" round dense icon="menu" />
+        <q-btn flat @click="drawerLeft = !drawerLeft" class="text-white" round dense icon="menu" />
         <q-toolbar-title>Barbearia 1 de outubro</q-toolbar-title>
         </q-toolbar>
     </q-header>
 
     <q-drawer
-      v-if="this.$q.platform.is.desktop"
       v-model="drawerLeft"
       bordered
       content-class="bg-grey-8"
@@ -56,11 +55,10 @@
           <q-item
             clickable
             v-ripple
-            :active="link === 'produtos'"
-            @click="SETTAB('tabela')"
             active-class="my-menu-link"
+            @click.native="downloadExcel"
           >
-            <q-item-section>Tabela</q-item-section>
+            <q-item-section>Download Excel</q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
@@ -90,6 +88,8 @@
 <script>
 
 import { mapState, mapMutations } from 'vuex'
+import Barbearia from '../services/barbearia/barbearia.js'
+import barbearia from '../services/barbearia/barbearia.js';
 
 export default {
   name: 'MyLayout',
@@ -99,11 +99,37 @@ export default {
       tab: 'cortes',
       versao: process.env.VERSAO,
       link: 'inbox',
-      drawerLeft: false
+      drawerLeft: true
     }
   },
   methods: {
     ...mapMutations('barbearia', ['SETTAB']),
+    downloadExcel(){
+      this.$q.dialog({
+        color: 'primary',
+        title: 'Download Excel',
+        message: 'Digite sua senha para efeuar o download',
+        prompt: {
+          model: '',
+          type: 'password' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        if (data == '123barbearia'){
+          window.open('http://localhost:3000/api/barbearia/excel', '_blank');
+          this.$q.notify({
+            message: 'Download efetuado',
+            color: 'bg-grey-10',
+            textColor: 'text-amber-14'
+          })
+        }
+      }).onCancel(() => {
+        console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        console.log('I am triggered on both OK and Cancel')
+      })
+    }
   }
 }
 </script>

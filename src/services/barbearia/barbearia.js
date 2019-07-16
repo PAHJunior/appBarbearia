@@ -1,8 +1,14 @@
-import { http } from '../buscarCEP/config.js'
+import { http } from './config.js'
 
 export default {
 
-	cep:(cep) => {
-		return http.get(cep)
+	buscaBarbearia:() => {
+		return http.get('/barbearia')
+	},
+	excelBarbearia:() => {
+		return http.get('/barbearia/excel')
+	},
+	cadastraBarbearia:(cad) => {
+		return http.post('/barbearia', cad)
 	}
 }

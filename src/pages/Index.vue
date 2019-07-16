@@ -370,17 +370,12 @@
             </q-card-section>
           </q-card>
         </q-tab-panel>
-
-
-        <q-tab-panel name="tabela" class="q-gutter-y-md">
-          <v-table></v-table>
-        </q-tab-panel>
       </q-tab-panels>
     </div>
 
     <!-- btn enviar -->
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-        <q-btn @click="enviar = true" round color="grey-10" class="text-amber-14" icon="send" size="400" />
+        <q-btn @click.native="enviar = true" round color="grey-10" class="text-amber-14" icon="send" size="400" />
     </q-page-sticky>
 
     <q-dialog v-model="enviar">
@@ -424,7 +419,7 @@
         <q-separator />
 
         <q-card-actions class="row">
-          <q-btn  label="Salvar" class="col-12 bg-grey-10 text-amber-14" />
+          <q-btn  label="Salvar" @click.native="cadastrar" class="col-12 bg-grey-10 text-amber-14" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -446,6 +441,8 @@ input[type=number] {
 <script>
 import VTable from 'components/tabela.vue'
 import { mapState, mapMutations } from 'vuex'
+import Barbearia from '../services/barbearia/barbearia.js'
+
 
 export default {
   name: 'PageIndex',
@@ -496,6 +493,36 @@ export default {
     }
   },
   methods: {
+    // Function para buscar
+    cadastrar(){
+      this.$q.dialog({
+        color: 'primary',
+        title: 'Download Excel',
+        message: 'Digite sua senha para efeuar o download',
+        prompt: {
+          model: '',
+          type: 'password' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        if (data == '123barbearia'){
+          Barbearia.cadastraBarbearia(this.barbearia)
+            .then((barbearia) => {
+              this.$q.notify({
+                message: 'Cadastro efetuado',
+                color: 'bg-grey-10',
+                textColor: 'text-amber-14'
+              })
+            })
+        }
+      }).onCancel(() => {
+        console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        console.log('I am triggered on both OK and Cancel')
+      })
+    },
+
 
     // Cortes
     // Cabelo
