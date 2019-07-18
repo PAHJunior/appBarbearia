@@ -51,7 +51,7 @@
           </q-item>
 
 
-          <!-- Aba Tabela -->
+          <!-- Aba Excel -->
           <q-item
             clickable
             v-ripple
@@ -59,6 +59,17 @@
             @click.native="downloadExcel"
           >
             <q-item-section>Download Excel</q-item-section>
+          </q-item>
+
+
+          <!-- Aba Deletar excel -->
+          <q-item
+            clickable
+            v-ripple
+            active-class="my-menu-link"
+            @click.native="deletar"
+          >
+            <q-item-section>Deletar dados</q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
@@ -116,18 +127,67 @@ export default {
         cancel: true,
         persistent: true
       }).onOk(data => {
-        if (data == '123barbearia'){
+        if (data == '0110'){
           window.open('http://localhost:3000/api/barbearia/excel', '_blank');
           this.$q.notify({
             message: 'Download efetuado',
             color: 'bg-grey-10',
             textColor: 'text-amber-14'
           })
+        }else{
+          this.$q.notify({
+            message: "Senha inválidos",
+            color: 'negative',
+            textColor: 'text-amber-14'
+          })
         }
       }).onCancel(() => {
         console.log('>>>> Cancel')
       }).onDismiss(() => {
-        console.log('I am triggered on both OK and Cancel')
+        console.log('>>>> onDismiss')
+      })
+    },
+    deletar(){
+      this.$q.dialog({
+        color: 'primary',
+        title: 'Deletar',
+        message: 'Digite sua senha para deletar os dados',
+        prompt: {
+          model: '',
+          type: 'password' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        if (data == '0110'){
+          Barbearia.deletar()
+          .then((deletar) => {
+            if (deletar.data.status == 200){
+              this.$q.notify({
+                message: deletar.data.data,
+                color: 'green',
+                textColor: 'text-amber-14'
+              })
+            }
+            if (deletar.data.status == 400) {
+              this.$q.notify({
+                message: deletar.data.data,
+                color: 'green',
+                textColor: 'text-amber-14'
+              })
+            }
+          })
+        }else{
+          this.$q.notify({
+            message: "Senha inválidos",
+            color: 'negative',
+            textColor: 'text-amber-14'
+          })
+        }
+      }).onCancel(() => {
+        console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        console.log('>>>> onDismiss')
       })
     }
   }

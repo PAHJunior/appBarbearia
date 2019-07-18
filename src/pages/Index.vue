@@ -495,31 +495,85 @@ export default {
   methods: {
     // Function para buscar
     cadastrar(){
-      this.$q.dialog({
+      const dialog = this.$q.dialog({
         color: 'primary',
-        title: 'Download Excel',
-        message: 'Digite sua senha para efeuar o download',
+        title: 'Cadastrar',
+        message: 'Digite sua senha para efeuar o cadastro',
         prompt: {
           model: '',
           type: 'password' // optional
         },
         cancel: true,
-        persistent: true
+        persistent: false
       }).onOk(data => {
-        if (data == '123barbearia'){
-          Barbearia.cadastraBarbearia(this.barbearia)
-            .then((barbearia) => {
-              this.$q.notify({
-                message: 'Cadastro efetuado',
-                color: 'bg-grey-10',
-                textColor: 'text-amber-14'
-              })
-            })
+        if (data == '0110'){
+          if ((this.barbearia.cortes.cabelo.dinheiro) > 0 || 
+              (this.barbearia.cortes.cabelo.cartao) > 0 ||
+              (this.barbearia.cortes.barba.dinheiro) > 0 ||
+              (this.barbearia.cortes.barba.cartao) > 0 ||
+              (this.barbearia.bebidas.coca.quantidade) > 0 ||
+              (this.barbearia.bebidas.budweiser.quantidade) > 0 ||
+              (this.barbearia.bebidas.skol.quantidade) > 0 ||
+              (this.barbearia.bebidas.stella.quantidade) > 0 ||
+              (this.barbearia.bebidas.bonafont.quantidade) > 0 ||
+              (this.barbearia.produtos.gel.quantidade) > 0 ||
+              (this.barbearia.produtos.cera.quantidade) > 0) {
+
+                Barbearia.cadastraBarbearia(this.barbearia)
+                  .then((barbearia) => {
+                    if(barbearia.data.status == 200){
+                      this.$q.notify({
+                        message: barbearia.data.data,
+                        color: 'green',
+                        textColor: 'text-amber-14'
+                      })
+                      this.barbearia.cortes.cabelo.dinheiro = 0
+                      this.barbearia.cortes.cabelo.cartao = 0
+                      this.barbearia.cortes.barba.dinheiro = 0
+                      this.barbearia.cortes.barba.cartao = 0
+                      this.barbearia.bebidas.coca.quantidade = 0
+                      this.barbearia.bebidas.budweiser.quantidade = 0
+                      this.barbearia.bebidas.skol.quantidade = 0
+                      this.barbearia.bebidas.stella.quantidade = 0
+                      this.barbearia.bebidas.bonafont.quantidade = 0
+                      this.barbearia.produtos.gel.quantidade = 0
+                      this.barbearia.produtos.cera.quantidade = 0
+                      this.enviar = false
+                    }
+                    if(barbearia.data.status == 400){
+                      this.$q.notify({
+                        message: barbearia.data.data,
+                        color: 'negative',
+                        textColor: 'text-amber-14'
+                      })
+                    }
+                  })
+                  .catch((e) => {
+                    console.log(e)
+                    this.$q.notify({
+                        message: "Erro interno",
+                        color: 'negative',
+                        textColor: 'text-amber-14'
+                      })
+                  })
+              }else{
+                this.$q.notify({
+                  message: "Valores inválidos",
+                  color: 'negative',
+                  textColor: 'text-amber-14'
+                })
+              }
+        }else{
+          this.$q.notify({
+            message: "Senha inválidos",
+            color: 'negative',
+            textColor: 'text-amber-14'
+          })
         }
       }).onCancel(() => {
         console.log('>>>> Cancel')
       }).onDismiss(() => {
-        console.log('I am triggered on both OK and Cancel')
+        console.log('>>>> onDismiss')
       })
     },
 
